@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 import uuid
 
 
@@ -9,7 +8,6 @@ class User:
         self._telegram_id: str = telegram_id
         self._name: str = name
         self._email: str = email
-        self._calendar_id: Optional[str] = None
         self._is_active: bool = True
         
         if not self._validate_email(email):
@@ -26,12 +24,6 @@ class User:
     
     def get_email(self) -> str:
         return self._email
-    
-    def set_calendar_id(self, calendar_id: str) -> None:
-        self._calendar_id = calendar_id
-    
-    def get_calendar_id(self) -> Optional[str]:
-        return self._calendar_id
     
     def activate(self) -> None:
         self._is_active = True

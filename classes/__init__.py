@@ -16,6 +16,8 @@ from .commands import (
 from .service import Service
 from .ml_service import MLService
 from .bot import TgBot
+from .balance import Balance
+from .transaction import Transaction, TransactionType
 
 __all__ = [
     "User",
@@ -34,5 +36,8 @@ __all__ = [
     "Service",
     "MLService",
     "TgBot",
+    "Balance",
+    "Transaction",
+    "TransactionType",
 ]
 
