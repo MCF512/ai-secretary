@@ -19,7 +19,7 @@ class UserDB(Base):
     __tablename__ = "users"
 
     id = Column(String, primary_key=True, index=True)
-    telegram_id = Column(String, unique=True, index=True, nullable=False)
+    telegram_id = Column(String, unique=True, index=True, nullable=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     role = Column(String, default="user", nullable=False)
@@ -29,6 +29,12 @@ class UserDB(Base):
 
     transactions = relationship(
         "TransactionDB",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    predictions = relationship(
+        "PredictionDB",
         back_populates="user",
         cascade="all, delete-orphan",
     )
@@ -51,5 +57,20 @@ class TransactionDB(Base):
     balance_after = Column(Float, nullable=False)
 
     user = relationship("UserDB", back_populates="transactions")
+
+
+class PredictionDB(Base):
+    __tablename__ = "predictions"
+
+    id = Column(String, primary_key=True, index=True)
+    user_id = Column(String, ForeignKey("users.id"), index=True, nullable=False)
+    task_id = Column(String, index=True, nullable=True)
+    input_data = Column(String, nullable=False)
+    output_data = Column(String, nullable=True)
+    model_type = Column(String, nullable=False)
+    confidence = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    user = relationship("UserDB", back_populates="predictions")
 
 

@@ -9,7 +9,7 @@ from db_models import UserDB, TransactionDB, TransactionTypeDB
 
 def create_user(
     db: Session,
-    telegram_id: str,
+    telegram_id: str | None,
     name: str,
     email: str,
     role: str = "user",
