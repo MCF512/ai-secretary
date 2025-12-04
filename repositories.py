@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from classes import User, Balance, Transaction, TransactionType
-from db_models import UserDB, TransactionDB, TransactionTypeDB
+from db_models import UserDB, TransactionDB, TransactionTypeDB, PredictionDB
 
 
 def create_user(
@@ -143,6 +143,44 @@ def get_user_balance(db: Session, user_id: str) -> float:
     if not user:
         raise ValueError("User not found")
     return user.balance
+
+
+def add_prediction(
+    db: Session,
+    user_id: str,
+    input_data: str,
+    output_data: str | None,
+    model_type: str,
+    confidence: float | None = None,
+) -> PredictionDB:
+    prediction = PredictionDB(
+        id=str(uuid.uuid4()),
+        user_id=user_id,
+        task_id=None,
+        input_data=input_data,
+        output_data=output_data,
+        model_type=model_type,
+        confidence=confidence,
+    )
+    db.add(prediction)
+    db.commit()
+    db.refresh(prediction)
+    return prediction
+
+
+def get_predictions(
+    db: Session,
+    user_id: str,
+    limit: int = 20,
+) -> List[PredictionDB]:
+    q = (
+        db.query(PredictionDB)
+        .filter(PredictionDB.user_id == user_id)
+        .order_by(PredictionDB.created_at.desc())
+    )
+    if limit > 0:
+        q = q.limit(limit)
+    return q.all()
 
 
 

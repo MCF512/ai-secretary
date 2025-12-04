@@ -18,9 +18,27 @@ pip install -r requirements.txt
 brew install ffmpeg
 ```
 
-### Запуск FastAPI
+### Инициализация базы данных
+
+Перед первым запуском необходимо создать базу данных:
+
+```bash
+python init_db.py
+```
+
+
+### Запуск FastAPI сервера
 
 ```bash
 uvicorn main:app --reload
 ```
+
+Сервер запустится на `http://localhost:8000`
+
+#### 1. Swagger UI
+**http://localhost:8000/docs**
+
+
+
+
 
