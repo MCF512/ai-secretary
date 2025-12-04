@@ -26,3 +26,12 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# Local data / artifacts
+app.db
+sample_ru.wav
+
+# Hugging Face / transformers cache
+~/.cache/huggingface/
+~/.cache/torch/
+
+

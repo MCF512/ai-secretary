@@ -1,21 +1,44 @@
-# ИИ-секретарь
-Идея приложения - взаимодействие с календарем (возможно еще со списком дел) с помощью телеграм-бота с ML-моделью. 
-Будет использована модель [whisper-podlodka](https://huggingface.co/bond005/whisper-podlodka-turbo) для расшивровки голосовых сообщений от пользователя в текст. Также планируется использование llm для взаимодействия с командами календаря (добавить, удалить).
+## ИИ-секретарь
+Идея приложения — взаимодействие с календарём (и, возможно, списком дел) через Telegram‑бота с ML‑моделью.
 
-- source venv/bin/activate
-- pip install -r requirements.txt
-- uvicorn main:app --reload
+Для распознавания речи используется модель  
+[`bond005/whisper-podlodka-turbo`](https://huggingface.co/bond005/whisper-podlodka-turbo).
 
-# ENV example
+### Установка
 
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
-POSTGRES_DB=ai_secretary
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-DATABASE_URL=postgresql://postgres:postgres@database:5432/ai_secretary
 
-RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+На macOS/Linux желательно установить `ffmpeg`, чтобы `transformers` мог читать аудио:
 
-APP_HOST=0.0.0.0
-APP_PORT=8000
+```bash
+brew install ffmpeg
 ```
+
+### Инициализация базы данных
+
+Перед первым запуском необходимо создать базу данных:
+
+```bash
+python init_db.py
+```
+
+
+### Запуск FastAPI сервера
+
+```bash
+uvicorn main:app --reload
+```
+
+Сервер запустится на `http://localhost:8000`
+
+#### 1. Swagger UI
+**http://localhost:8000/docs**
+
+
+
+
+
