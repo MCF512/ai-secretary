@@ -1,6 +1,28 @@
-# ИИ-секретарь
-Идея приложения - взаимодействие с календарем (возможно еще со списком дел) с помощью телеграм-бота с ML-моделью. 
-Будет использована модель [whisper-podlodka](https://huggingface.co/bond005/whisper-podlodka-turbo) для расшивровки голосовых сообщений от пользователя в текст. Также планируется использование llm для взаимодействия с командами календаря (добавить, удалить).
+## ИИ-секретарь
+Идея приложения — взаимодействие с календарём (и, возможно, списком дел) через Telegram‑бота с ML‑моделью.
+
+Для распознавания речи используется модель  
+[`bond005/whisper-podlodka-turbo`](https://huggingface.co/bond005/whisper-podlodka-turbo).
+
+### Установка
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+На macOS/Linux желательно установить `ffmpeg`, чтобы `transformers` мог читать аудио:
+
+```bash
+brew install ffmpeg
+```
+
+### Запуск FastAPI
+
+```bash
+uvicorn main:app --reload
+```
 
 - source venv/bin/activate
 - pip install -r requirements.txt

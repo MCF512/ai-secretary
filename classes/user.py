@@ -1,11 +1,12 @@
 import re
 import uuid
+from typing import Optional
 
 
 class User:
-    def __init__(self, telegram_id: str, name: str, email: str):
+    def __init__(self, telegram_id: str | None, name: str, email: str):
         self._user_id: str = self._generate_user_id()
-        self._telegram_id: str = telegram_id
+        self._telegram_id: Optional[str] = telegram_id
         self._name: str = name
         self._email: str = email
         self._is_active: bool = True
@@ -16,7 +17,7 @@ class User:
     def get_user_id(self) -> str:
         return self._user_id
     
-    def get_telegram_id(self) -> str:
+    def get_telegram_id(self) -> Optional[str]:
         return self._telegram_id
     
     def get_name(self) -> str:
