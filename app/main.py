@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.base import Base, engine, SessionLocal
 from app.api import auth, balance, transactions, predictions
 from app.repositories import create_user
+from app.rabbitmq.publisher import publisher
 
 
 def init_demo_data() -> None:
@@ -45,7 +46,12 @@ def init_demo_data() -> None:
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     init_demo_data()
+    try:
+        publisher._connect()
+    except Exception as e:
+        print(f"Warning: Could not connect to RabbitMQ at startup: {e}")
     yield
+    publisher.close()
 
 
 app = FastAPI(

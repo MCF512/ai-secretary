@@ -16,6 +16,54 @@ services:
       - app-network
     command: sh -c "sleep 5 && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
+  worker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+      - rabbitmq
+      - app
+    networks:
+      - app-network
+    command: sh -c "sleep 10 && python -m app.workers.worker"
+
+  worker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+      - rabbitmq
+      - app
+    networks:
+      - app-network
+    command: sh -c "sleep 10 && python -m app.workers.worker"
+
+  worker-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+      - rabbitmq
+      - app
+    networks:
+      - app-network
+    command: sh -c "sleep 10 && python -m app.workers.worker"
+
   web-proxy:
     image: nginx:latest
     ports:

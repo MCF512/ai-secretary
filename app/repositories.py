@@ -161,11 +161,12 @@ def add_prediction(
     output_data: str | None,
     model_type: str,
     confidence: float | None = None,
+    task_id: str | None = None,
 ) -> PredictionDB:
     prediction = PredictionDB(
         id=str(uuid.uuid4()),
         user_id=user_id,
-        task_id=None,
+        task_id=task_id,
         input_data=input_data,
         output_data=output_data,
         model_type=model_type,

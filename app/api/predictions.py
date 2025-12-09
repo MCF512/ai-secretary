@@ -1,4 +1,5 @@
 from typing import List
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
@@ -7,6 +8,7 @@ from app.core.security import get_current_user
 from app.models.user import UserDB
 from app.schemas.prediction import PredictionRequest, PredictionResponse
 from app.repositories import add_prediction, get_predictions, withdraw
+from app.rabbitmq.publisher import publisher
 
 router = APIRouter(prefix="", tags=["predictions"])
 
@@ -31,15 +33,16 @@ def predict_text(
             detail=f"Insufficient funds. Required: {PREDICTION_COST}, Available: {current_user.balance}",
         )
 
-    output = f"Predicted command for text: {payload.text}"
-
+    task_id = str(uuid.uuid4())
+    
     prediction = add_prediction(
         db=db,
         user_id=current_user.id,
         input_data=payload.text,
-        output_data=output,
-        model_type="text_to_command_stub",
+        output_data=None,
+        model_type="text_to_command",
         confidence=None,
+        task_id=task_id,
     )
 
     try:
@@ -55,6 +58,20 @@ def predict_text(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
+        )
+
+    task_data = {
+        'task_id': task_id,
+        'user_id': current_user.id,
+        'task_type': 'text_to_command',
+        'input_data': payload.text,
+        'prediction_id': prediction.id
+    }
+
+    if not publisher.publish_task(task_data):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to publish task to queue"
         )
 
     return PredictionResponse(
