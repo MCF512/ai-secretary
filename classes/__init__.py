@@ -1,6 +1,5 @@
 from .user import User
 from .ml_model import MLModel
-from .speech_to_text_model import SpeechToTextModel
 from .text_to_command_model import TextToCommandModel
 from .ml_task import MLTask
 from .prediction_history import PredictionHistory
@@ -14,15 +13,12 @@ from .commands import (
     ListEventsCommand
 )
 from .service import Service
-from .ml_service import MLService
-from .bot import TgBot
 from .balance import Balance
 from .transaction import Transaction, TransactionType
 
 __all__ = [
     "User",
     "MLModel",
-    "SpeechToTextModel",
     "TextToCommandModel",
     "MLTask",
     "PredictionHistory",
@@ -34,10 +30,20 @@ __all__ = [
     "UpdateEventCommand",
     "ListEventsCommand",
     "Service",
-    "MLService",
-    "TgBot",
     "Balance",
     "Transaction",
     "TransactionType",
 ]
+
+def __getattr__(name):
+    if name == "SpeechToTextModel":
+        from .speech_to_text_model import SpeechToTextModel
+        return SpeechToTextModel
+    if name == "MLService":
+        from .ml_service import MLService
+        return MLService
+    if name == "TgBot":
+        from .bot import TgBot
+        return TgBot
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

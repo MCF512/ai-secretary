@@ -2,11 +2,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.app
     env_file:
       - .env
-    volumes:
-      - .:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -19,11 +17,9 @@ services:
   worker-1:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.worker
     env_file:
       - .env
-    volumes:
-      - .:/app
     depends_on:
       - database
       - rabbitmq
@@ -35,11 +31,9 @@ services:
   worker-2:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.worker
     env_file:
       - .env
-    volumes:
-      - .:/app
     depends_on:
       - database
       - rabbitmq
@@ -51,11 +45,9 @@ services:
   worker-3:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.worker
     env_file:
       - .env
-    volumes:
-      - .:/app
     depends_on:
       - database
       - rabbitmq
