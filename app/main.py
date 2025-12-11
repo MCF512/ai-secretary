@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.db.base import Base, engine, SessionLocal
-from app.api import auth, balance, transactions, predictions
+from app.api import auth, balance, transactions, predictions, admin, calendar
 from app.repositories import create_user
 from app.rabbitmq.publisher import publisher
 
@@ -94,11 +95,64 @@ app.include_router(auth.router)
 app.include_router(balance.router)
 app.include_router(transactions.router)
 app.include_router(predictions.router)
+app.include_router(admin.router)
+app.include_router(calendar.router)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/", tags=["health"], summary="Главная")
 async def root():
+    from fastapi.responses import FileResponse
+    import os
+    if os.path.exists("static/index.html"):
+        return FileResponse("static/index.html")
     return {"message": "Hello World"}
+
+
+@app.get("/login.html", tags=["health"])
+async def login_page():
+    from fastapi.responses import FileResponse
+    import os
+    if os.path.exists("static/login.html"):
+        return FileResponse("static/login.html")
+    return {"error": "Page not found"}
+
+
+@app.get("/register.html", tags=["health"])
+async def register_page():
+    from fastapi.responses import FileResponse
+    import os
+    if os.path.exists("static/register.html"):
+        return FileResponse("static/register.html")
+    return {"error": "Page not found"}
+
+
+@app.get("/dashboard.html", tags=["health"])
+async def dashboard_page():
+    from fastapi.responses import FileResponse
+    import os
+    if os.path.exists("static/dashboard.html"):
+        return FileResponse("static/dashboard.html")
+    return {"error": "Page not found"}
+
+
+@app.get("/admin.html", tags=["health"])
+async def admin_page():
+    from fastapi.responses import FileResponse
+    import os
+    if os.path.exists("static/admin.html"):
+        return FileResponse("static/admin.html")
+    return {"error": "Page not found"}
+
+
+@app.get("/calendar.html", tags=["health"])
+async def calendar_page():
+    from fastapi.responses import FileResponse
+    import os
+    if os.path.exists("static/calendar.html"):
+        return FileResponse("static/calendar.html")
+    return {"error": "Page not found"}
 
 
 @app.get("/health", tags=["health"], summary="Проверка работоспособности API")

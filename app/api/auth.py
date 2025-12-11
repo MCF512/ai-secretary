@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 from app.db.base import get_db
 from app.schemas.auth import UserRegisterRequest, UserLoginRequest, TokenResponse, UserResponse
 from app.repositories import create_user, get_user_by_email
-from app.core.security import verify_password, create_access_token
+from app.core.security import verify_password, create_access_token, get_current_user
 from app.core.config import settings
+from app.models.user import UserDB
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -70,4 +71,22 @@ def login(payload: UserLoginRequest, db: Session = Depends(get_db)):
         data={"sub": user.id}, expires_delta=access_token_expires
     )
     return TokenResponse(access_token=access_token, token_type="bearer")
+
+
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    summary="Информация о текущем пользователе"
+)
+def get_current_user_info(
+    current_user: UserDB = Depends(get_current_user)
+):
+    return UserResponse(
+        id=current_user.id,
+        name=current_user.name,
+        email=current_user.email,
+        telegram_id=current_user.telegram_id,
+        balance=current_user.balance,
+        role=current_user.role,
+    )
 

@@ -34,9 +34,11 @@ def predict_text(
         )
 
     task_id = str(uuid.uuid4())
+    prediction_id = str(uuid.uuid4())
     
     prediction = add_prediction(
         db=db,
+        id=prediction_id,
         user_id=current_user.id,
         input_data=payload.text,
         output_data=None,

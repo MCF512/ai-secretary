@@ -46,6 +46,10 @@ def get_user_by_telegram_id(db: Session, telegram_id: str) -> UserDB | None:
     return db.query(UserDB).filter(UserDB.telegram_id == telegram_id).first()
 
 
+def get_user_by_id(db: Session, user_id: str) -> UserDB | None:
+    return db.query(UserDB).filter(UserDB.id == user_id).first()
+
+
 def _add_transaction(
     db: Session,
     user: UserDB,
@@ -156,6 +160,7 @@ def get_user_balance(db: Session, user_id: str) -> float:
 
 def add_prediction(
     db: Session,
+    id: str,
     user_id: str,
     input_data: str,
     output_data: str | None,
@@ -164,7 +169,7 @@ def add_prediction(
     task_id: str | None = None,
 ) -> PredictionDB:
     prediction = PredictionDB(
-        id=str(uuid.uuid4()),
+        id=id,
         user_id=user_id,
         task_id=task_id,
         input_data=input_data,

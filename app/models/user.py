@@ -30,3 +30,9 @@ class UserDB(Base):
         cascade="all, delete-orphan",
     )
 
+    calendar_events = relationship(
+        "CalendarEventDB",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Календарь - AI Secretary</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/calendar.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">AI Secretary</div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Главная</a>
+                <a href="/dashboard.html" class="nav-link">Личный кабинет</a>
+                <a href="/calendar.html" class="nav-link active">Календарь</a>
+                <a href="/admin.html" class="nav-link" id="adminLink" style="display: none;">Админ-панель</a>
+                <button class="btn btn-outline" id="logoutBtn">Выйти</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="calendar-header">
+            <h1>Мой календарь</h1>
+            <button class="btn btn-primary" id="addEventBtn">+ Создать событие</button>
+        </div>
+
+        <div class="calendar-controls">
+            <button class="btn btn-outline" id="prevMonthBtn">← Предыдущий</button>
+            <h2 id="currentMonth"></h2>
+            <button class="btn btn-outline" id="nextMonthBtn">Следующий →</button>
+            <button class="btn btn-outline" id="todayBtn">Сегодня</button>
+        </div>
+
+        <div class="calendar-view">
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <div class="events-list">
+            <h2>События</h2>
+            <div id="eventsList" class="events-container">
+                <div class="loading">Загрузка...</div>
+            </div>
+        </div>
+    </main>
+
+    <div id="eventModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 id="modalTitle">Создать событие</h2>
+            <form id="eventForm">
+                <input type="hidden" id="eventId" name="event_id">
+                <div class="form-group">
+                    <label for="eventTitle">Название *</label>
+                    <input type="text" id="eventTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Описание</label>
+                    <textarea id="eventDescription" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventStartTime">Начало *</label>
+                    <input type="datetime-local" id="eventStartTime" name="start_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventEndTime">Окончание</label>
+                    <input type="datetime-local" id="eventEndTime" name="end_time">
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Место</label>
+                    <input type="text" id="eventLocation" name="location">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block" id="submitBtn">Создать</button>
+                    <button type="button" class="btn btn-outline btn-block" id="deleteBtn" style="display: none; margin-top: 0.5rem;">Удалить</button>
+                </div>
+                <div id="eventError" class="error-message" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/calendar.js"></script>
+</body>
+</html>
+
+
