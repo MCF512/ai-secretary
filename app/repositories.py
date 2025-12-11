@@ -4,7 +4,10 @@ import uuid
 from sqlalchemy.orm import Session
 
 from classes import User, Balance, Transaction, TransactionType
-from db_models import UserDB, TransactionDB, TransactionTypeDB, PredictionDB
+from app.models.user import UserDB
+from app.models.transaction import TransactionDB, TransactionTypeDB
+from app.models.prediction import PredictionDB
+from app.core.security import get_password_hash
 
 
 def create_user(
@@ -12,6 +15,7 @@ def create_user(
     telegram_id: str | None,
     name: str,
     email: str,
+    password: str,
     role: str = "user",
     initial_balance: float = 0.0,
 ) -> UserDB:
@@ -22,6 +26,7 @@ def create_user(
         telegram_id=telegram_id,
         name=name,
         email=email,
+        hashed_password=get_password_hash(password),
         role=role,
         balance=initial_balance,
         is_active=user.is_active(),
@@ -33,8 +38,16 @@ def create_user(
     return user_db
 
 
+def get_user_by_email(db: Session, email: str) -> UserDB | None:
+    return db.query(UserDB).filter(UserDB.email == email).first()
+
+
 def get_user_by_telegram_id(db: Session, telegram_id: str) -> UserDB | None:
     return db.query(UserDB).filter(UserDB.telegram_id == telegram_id).first()
+
+
+def get_user_by_id(db: Session, user_id: str) -> UserDB | None:
+    return db.query(UserDB).filter(UserDB.id == user_id).first()
 
 
 def _add_transaction(
@@ -147,16 +160,18 @@ def get_user_balance(db: Session, user_id: str) -> float:
 
 def add_prediction(
     db: Session,
+    id: str,
     user_id: str,
     input_data: str,
     output_data: str | None,
     model_type: str,
     confidence: float | None = None,
+    task_id: str | None = None,
 ) -> PredictionDB:
     prediction = PredictionDB(
-        id=str(uuid.uuid4()),
+        id=id,
         user_id=user_id,
-        task_id=None,
+        task_id=task_id,
         input_data=input_data,
         output_data=output_data,
         model_type=model_type,
@@ -181,6 +196,4 @@ def get_predictions(
     if limit > 0:
         q = q.limit(limit)
     return q.all()
-
-
 
