@@ -1,4 +1,6 @@
 from typing import Any, Dict, List
+import re
+from datetime import datetime, timedelta
 from .ml_model import MLModel
 
 
@@ -44,11 +46,42 @@ class TextToCommandModel(MLModel):
     
     def _parse_command(self, text: str) -> Dict[str, Any]:
         text_lower = text.lower()
-        
+
         if any(word in text_lower for word in ["создай", "добавь", "запланируй", "create", "add"]):
+            params: Dict[str, Any] = {}
+
+            title_match = re.search(r"[\"“](.+?)[\"”]", text)
+            if title_match:
+                params["title"] = title_match.group(1).strip()
+            else:
+                params["title"] = text
+
+            now = datetime.now()
+            date = now.date()
+
+            if "завтра" in text_lower:
+                date = now.date() + timedelta(days=1)
+            elif "послезавтра" in text_lower:
+                date = now.date() + timedelta(days=2)
+
+            time_match = re.search(r"(\d{1,2})[:.](\d{2})", text_lower)
+            hour = 9
+            minute = 0
+            if time_match:
+                hour = int(time_match.group(1))
+                minute = int(time_match.group(2))
+
+            start_dt = datetime.combine(date, datetime.min.time()).replace(
+                hour=hour, minute=minute, second=0, microsecond=0
+            )
+            end_dt = start_dt + timedelta(hours=1)
+
+            params["start_time"] = start_dt.isoformat()
+            params["end_time"] = end_dt.isoformat()
+
             return {
                 "command_type": "create_event",
-                "parameters": {"title": text},
+                "parameters": params,
                 "confidence": 0.9
             }
         elif any(word in text_lower for word in ["удали", "убери", "отмени", "delete", "remove"]):

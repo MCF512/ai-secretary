@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Secretary{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">AI Secretary</div>
+            <div class="nav-links">
+                <a href="/" class="nav-link" id="homeLink">Главная</a>
+                <a href="/login.html" class="nav-link" id="loginLink">Войти</a>
+                <a href="/register.html" class="nav-link" id="registerLink">Регистрация</a>
+                <a href="/dashboard.html" class="nav-link" id="dashboardLink" style="display: none;">Личный кабинет</a>
+                <a href="/calendar.html" class="nav-link" id="calendarLink" style="display: none;">Календарь</a>
+                <a href="/admin.html" class="nav-link" id="adminLink" style="display: none;">Админ-панель</a>
+                <button class="btn btn-outline" id="logoutBtn" style="display: none;">Выйти</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+    </footer>
+
+    <script src="/static/js/auth.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+

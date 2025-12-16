@@ -1,25 +1,65 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.app
     env_file:
       - .env
-    volumes:
-      - .:/app
+    ports:
+      - "8000:8000"
     depends_on:
       - database
       - rabbitmq
     networks:
       - app-network
+    command: sh -c "sleep 5 && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  worker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - rabbitmq
+      - app
+    networks:
+      - app-network
+    command: sh -c "sleep 10 && python -m app.workers.worker"
+
+  worker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - rabbitmq
+      - app
+    networks:
+      - app-network
+    command: sh -c "sleep 10 && python -m app.workers.worker"
+
+  worker-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - rabbitmq
+      - app
+    networks:
+      - app-network
+    command: sh -c "sleep 10 && python -m app.workers.worker"
 
   web-proxy:
     image: nginx:latest
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -46,6 +86,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
