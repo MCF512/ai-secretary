@@ -81,7 +81,7 @@
 
 .calendar-event-dot {
     width: 100%;
-    height: 4px;
+    min-height: 1.1rem;
     background-color: var(--primary-color);
     border-radius: 2px;
     font-size: 0.75rem;
@@ -89,6 +89,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: white;
 }
 
 .events-list {
@@ -218,7 +219,8 @@
     }
 
     .calendar-event-dot {
-        display: none;
+        display: block;
+        font-size: 0.7rem;
     }
 }
 

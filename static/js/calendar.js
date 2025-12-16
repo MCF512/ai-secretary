@@ -104,16 +104,21 @@ function createDayElement(date, currentYear, currentMonth, today) {
 
     const dayEvents = document.createElement('div');
     dayEvents.className = 'calendar-day-events';
-    
+
     const dayEventsList = getEventsForDate(date);
     dayEventsList.forEach(event => {
         const eventDot = document.createElement('div');
         eventDot.className = 'calendar-event-dot';
         eventDot.style.backgroundColor = getEventColor(event);
-        eventDot.title = event.title;
+
+        const start = new Date(event.start_time);
+        const timeStr = start.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        eventDot.textContent = `${timeStr} ${event.title}`;
+        eventDot.title = `${timeStr} ${event.title}`;
+
         dayEvents.appendChild(eventDot);
     });
-    
+
     day.appendChild(dayEvents);
 
     day.addEventListener('click', () => {

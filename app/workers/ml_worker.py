@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.base import SessionLocal
 from app.models.prediction import PredictionDB
+from app.models.calendar_event import CalendarEventDB
 from classes import TextToCommandModel
 
 
@@ -90,6 +91,45 @@ class MLWorker:
             if prediction:
                 prediction.output_data = result.get('output_data')
                 prediction.confidence = result.get('confidence')
+
+                try:
+                    payload = json.loads(result.get('output_data') or "{}")
+                except json.JSONDecodeError:
+                    payload = {}
+
+                if payload.get("command_type") == "create_event":
+                    params = payload.get("parameters") or {}
+                    title = params.get("title") or prediction.input_data
+                    start_time_str = params.get("start_time")
+                    end_time_str = params.get("end_time")
+
+                    from datetime import datetime
+
+                    if start_time_str:
+                        try:
+                            start_time = datetime.fromisoformat(start_time_str)
+                        except ValueError:
+                            start_time = prediction.created_at
+                    else:
+                        start_time = prediction.created_at
+
+                    end_time = None
+                    if end_time_str:
+                        try:
+                            end_time = datetime.fromisoformat(end_time_str)
+                        except ValueError:
+                            end_time = None
+
+                    event = CalendarEventDB(
+                        user_id=prediction.user_id,
+                        title=title,
+                        description=None,
+                        start_time=start_time,
+                        end_time=end_time,
+                        location=None,
+                    )
+                    db.add(event)
+
                 db.commit()
         except Exception as e:
             print(f"Error saving result: {e}")

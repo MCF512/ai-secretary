@@ -37,6 +37,12 @@ def add_funds(
     current_user: UserDB = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admin can deposit funds"
+        )
+
     try:
         tx = deposit(
             db=db,

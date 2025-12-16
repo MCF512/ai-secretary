@@ -9,6 +9,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('userName').textContent = userInfo.name || userInfo.email;
     }
 
+    const depositBtn = document.getElementById('depositBtn');
+    const depositModal = document.getElementById('depositModal');
+
+    if (!userInfo || userInfo.role !== 'admin') {
+        if (depositBtn) {
+            depositBtn.style.display = 'none';
+        }
+        if (depositModal) {
+            depositModal.style.display = 'none';
+        }
+    }
+
     await loadBalance();
     await loadPredictions();
     await loadTransactions();
@@ -16,25 +28,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     const predictionForm = document.getElementById('predictionForm');
     predictionForm.addEventListener('submit', handlePrediction);
 
-    const depositBtn = document.getElementById('depositBtn');
-    depositBtn.addEventListener('click', () => {
-        document.getElementById('depositModal').style.display = 'flex';
-    });
-
-    const depositModal = document.getElementById('depositModal');
-    const modalClose = depositModal.querySelector('.modal-close');
-    modalClose.addEventListener('click', () => {
-        depositModal.style.display = 'none';
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target === depositModal) {
-            depositModal.style.display = 'none';
+    if (userInfo && userInfo.role === 'admin') {
+        if (depositBtn) {
+            depositBtn.addEventListener('click', () => {
+                if (depositModal) {
+                    depositModal.style.display = 'flex';
+                }
+            });
         }
-    });
 
-    const depositForm = document.getElementById('depositForm');
-    depositForm.addEventListener('submit', handleDeposit);
+        if (depositModal) {
+            const modalClose = depositModal.querySelector('.modal-close');
+            if (modalClose) {
+                modalClose.addEventListener('click', () => {
+                    depositModal.style.display = 'none';
+                });
+            }
+
+            window.addEventListener('click', (e) => {
+                if (e.target === depositModal) {
+                    depositModal.style.display = 'none';
+                }
+            });
+        }
+
+        const depositForm = document.getElementById('depositForm');
+        if (depositForm) {
+            depositForm.addEventListener('submit', handleDeposit);
+        }
+    }
 });
 
 async function loadBalance() {
