@@ -30,25 +30,37 @@ class RabbitMQPublisher:
             raise
 
     def publish_task(self, task_data: Dict[str, Any]) -> bool:
-        try:
+        def _do_publish() -> None:
             if not self.connection or self.connection.is_closed:
                 self._connect()
 
             message = json.dumps(task_data)
             self.channel.basic_publish(
-                exchange='',
+                exchange="",
                 routing_key=settings.RABBITMQ_QUEUE,
                 body=message,
                 properties=pika.BasicProperties(
                     delivery_mode=2,
-                )
+                ),
             )
+
+        try:
+            _do_publish()
             return True
         except Exception as e:
             print(f"Error publishing task: {e}")
             if self.connection and not self.connection.is_closed:
                 self.connection.close()
-            return False
+
+            # попытка переподключиться и отправить задачу ещё раз
+            try:
+                _do_publish()
+                return True
+            except Exception as e2:
+                print(f"Error publishing task after reconnect: {e2}")
+                if self.connection and not self.connection.is_closed:
+                    self.connection.close()
+                return False
 
     def close(self):
         if self.connection and not self.connection.is_closed:

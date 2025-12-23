@@ -260,7 +260,8 @@ main {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
@@ -270,7 +271,8 @@ main {
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
@@ -510,6 +512,19 @@ main {
 
 .admin-section h2 {
     margin-bottom: 1rem;
+}
+
+.admin-user-select-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.admin-user-select-wrapper select {
+    height: auto;
+    max-height: 180px;
+    background-color: #fff;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {
