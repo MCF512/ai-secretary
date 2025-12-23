@@ -13,8 +13,19 @@
     <div class="dashboard-card">
         <form id="adminDepositForm">
             <div class="form-group">
-                <label for="adminUserId">ID пользователя</label>
-                <input type="text" id="adminUserId" name="user_id" required>
+                <label for="adminUserSelect">Пользователь</label>
+                <div class="admin-user-select-wrapper">
+                    <input
+                        type="text"
+                        id="adminUserSearch"
+                        class="input"
+                        placeholder="Поиск по email или имени"
+                        autocomplete="off"
+                    >
+                    <select id="adminUserSelect" name="user_id" size="5" required>
+                    </select>
+                </div>
+                <small id="adminUserHint" class="text-muted">Выберите пользователя для пополнения баланса</small>
             </div>
             <div class="form-group">
                 <label for="adminAmount">Сумма (кредиты)</label>

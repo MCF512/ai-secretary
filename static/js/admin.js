@@ -10,11 +10,81 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    await loadAllTransactions();
+    await Promise.all([
+        loadAdminUsers(),
+        loadAllTransactions(),
+    ]);
 
     const adminDepositForm = document.getElementById('adminDepositForm');
     adminDepositForm.addEventListener('submit', handleAdminDeposit);
+
+    const adminUserSearch = document.getElementById('adminUserSearch');
+    if (adminUserSearch) {
+        adminUserSearch.addEventListener('input', filterAdminUsers);
+    }
 });
+
+let adminUsersCache = [];
+
+async function loadAdminUsers() {
+    const select = document.getElementById('adminUserSelect');
+    const hint = document.getElementById('adminUserHint');
+
+    if (!select) return;
+
+    select.innerHTML = '<option disabled>Загрузка пользователей...</option>';
+
+    try {
+        const users = await apiRequest('/admin/users');
+        adminUsersCache = users;
+
+        if (adminUsersCache.length === 0) {
+            select.innerHTML = '<option disabled>Пользователи не найдены</option>';
+            if (hint) {
+                hint.textContent = 'Пока нет зарегистрированных пользователей';
+            }
+            return;
+        }
+
+        renderAdminUsersSelect(adminUsersCache);
+    } catch (error) {
+        console.error('Error loading users for admin:', error);
+        select.innerHTML = '<option disabled>Ошибка загрузки пользователей</option>';
+        if (hint) {
+            hint.textContent = 'Не удалось загрузить список пользователей';
+        }
+    }
+}
+
+function renderAdminUsersSelect(users) {
+    const select = document.getElementById('adminUserSelect');
+    if (!select) return;
+
+    select.innerHTML = '';
+
+    users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = `${user.email} — ${user.name || 'Без имени'}`;
+        select.appendChild(option);
+    });
+}
+
+function filterAdminUsers() {
+    const query = document.getElementById('adminUserSearch').value.trim().toLowerCase();
+    if (!query) {
+        renderAdminUsersSelect(adminUsersCache);
+        return;
+    }
+
+    const filtered = adminUsersCache.filter(u => {
+        const email = (u.email || '').toLowerCase();
+        const name = (u.name || '').toLowerCase();
+        return email.includes(query) || name.includes(query);
+    });
+
+    renderAdminUsersSelect(filtered);
+}
 
 async function loadAllTransactions() {
     const transactionsList = document.getElementById('allTransactionsList');
@@ -60,12 +130,13 @@ async function handleAdminDeposit(e) {
     errorDiv.style.display = 'none';
     successDiv.style.display = 'none';
 
-    const userId = document.getElementById('adminUserId').value.trim();
+    const userSelect = document.getElementById('adminUserSelect');
+    const userId = userSelect && userSelect.value ? userSelect.value.trim() : '';
     const amount = parseFloat(document.getElementById('adminAmount').value);
     const description = document.getElementById('adminDescription').value || 'Пополнение баланса администратором';
 
     if (!userId) {
-        errorDiv.textContent = 'Введите ID пользователя';
+        errorDiv.textContent = 'Выберите пользователя из списка';
         errorDiv.style.display = 'block';
         return;
     }

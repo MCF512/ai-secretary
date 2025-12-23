@@ -6,6 +6,7 @@ from app.db.base import get_db
 from app.core.security import get_current_user
 from app.models.user import UserDB
 from app.schemas.transaction import DepositRequest, TransactionResponse
+from app.schemas.auth import UserResponse
 from app.repositories import deposit, get_transactions, get_user_by_id
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -18,6 +19,19 @@ def require_admin(current_user: UserDB = Depends(get_current_user)) -> UserDB:
             detail="Admin access required"
         )
     return current_user
+
+
+@router.get(
+    "/users",
+    response_model=List[UserResponse],
+    summary="Получить список пользователей (только для админов)",
+)
+def list_users(
+    admin: UserDB = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    users = db.query(UserDB).order_by(UserDB.email.asc()).all()
+    return users
 
 
 @router.post(
